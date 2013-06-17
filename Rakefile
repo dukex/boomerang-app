@@ -4,11 +4,13 @@ require "bundler/setup"
 require 'pg'
 require 'active_record'
 require 'yaml'
+require 'erb'
 
 namespace :db do
   desc "Create the db"
   task :create do
-    dbconfig = YAML::load(File.open(File.expand_path("../config/database.yml", __FILE__)))[ENV.fetch("RACK_ENV", 'development')]
+    database_file = File.open(File.expand_path("../config/database.yml", __FILE__))
+    dbconfig = YAML::load(ERB.new(database_file).result)[ENV.fetch("RACK_ENV", 'development')]
 
     admin_connection = dbconfig.merge({'database'=> 'postgres',
       'schema_search_path'=> 'public'})
@@ -17,7 +19,8 @@ namespace :db do
   end
 
   task :migrate do
-    dbconfig = YAML::load(File.open(File.expand_path("../config/database.yml", __FILE__)))[ENV.fetch("RACK_ENV", 'development')]
+    database_file = File.open(File.expand_path("../config/database.yml", __FILE__))
+    dbconfig = YAML::load(ERB.new(database_file).result)[ENV.fetch("RACK_ENV", 'development')]
     ActiveRecord::Base.establish_connection(dbconfig)
     ActiveRecord::Migrator.migrate("db/migrate/")
   end
