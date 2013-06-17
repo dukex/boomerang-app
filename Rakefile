@@ -52,7 +52,7 @@ task :updater do
       next if post.was_shared?
       begin
         link_count = entry.links[:alternate].size
-        message = "#{entry.content[0, (130-link_count)]}...\n entry.links[:alternate]"
+        message = "#{entry.content.gsub(/(<[^>]+>|&nbsp;|\r|\n)/,"")[0, (130-link_count)]}...\n #{entry.links[:alternate]}"
         facebook.api("/me/feed", {message: message}, "post") if facebook
         twitter.update(message[0, 139]) if twitter
         if facebook or twitter
