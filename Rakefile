@@ -3,8 +3,7 @@ require "bundler/setup"
 
 require 'pg'
 require 'active_record'
-require 'yaml'
-require 'erb'
+
 
 namespace :db do
   desc "Create the db"
@@ -39,6 +38,7 @@ task :updater do
 
   Author.all.each do |author|
     facebook = Koala::Facebook::API.new(author.facebook_access_token) if author.facebook_access_token
+    twitter = false
     #twitter = Twitter::Client.new(
     #  :oauth_token => "",#author.twitter_oauth_token,
     #  :oauth_token_secret => ""#author.twitter_token_secret
