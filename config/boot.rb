@@ -1,4 +1,5 @@
 require "bundler"
+require 'logger'
 Bundler.setup(:default, ENV.fetch("RACK_ENV", :development))
 Bundler.require
 
@@ -6,6 +7,8 @@ Bundler.require
 module Views; end
 
 require File.expand_path("../environment", __FILE__)
+
+require File.expand_path("../database", __FILE__)
 
 # Add directories to load path.
 #

@@ -1,5 +1,10 @@
 require "./config/boot"
 
-get "/" do
-  mustache "index"
+class BoomerangApp < Sinatra::Base
+  register Sinatra::Warden
+
+  get "/" do
+    mustache "index"
+  end
 end
+
