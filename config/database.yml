@@ -1,6 +1,0 @@
-development:
-  adapter: postgresql
-  encoding: unicode
-  pool: 5
-  host: localhost
-  database: diaspora_dev

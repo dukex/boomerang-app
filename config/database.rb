@@ -1,10 +1,16 @@
 require 'active_record'
-require 'yaml'
-require 'erb'
+require 'uri'
 
-database_file = File.open(File.expand_path("../config/database.yml", __FILE__))
-dbconfig = YAML::load(ERB.new(database_file).result)[ENV.fetch("RACK_ENV", 'development')]
+db = URI.parse(ENV['DATABASE_URL'] || "postgres://localhost:5432/diaspora_dev")
 
+ActiveRecord::Base.establish_connection(
+  :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
+  :host     => db.host,
+  :port     => db.port,
+  :username => db.user,
+  :password => db.password,
+  :database => db.path[1..-1],
+  :encoding => 'utf8'
+)
 
-ActiveRecord::Base.establish_connection(dbconfig)
 ActiveRecord::Base.logger = Logger.new(STDERR)

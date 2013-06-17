@@ -9,19 +9,24 @@ require 'erb'
 namespace :db do
   desc "Create the db"
   task :create do
-    database_file = File.open(File.expand_path("../config/database.yml", __FILE__))
-    dbconfig = YAML::load(ERB.new(database_file).result)[ENV.fetch("RACK_ENV", 'development')]
+    db = URI.parse(ENV['DATABASE_URL'] || "postgres://localhost:5432/diaspora_dev")
 
-    admin_connection = dbconfig.merge({'database'=> 'postgres',
-      'schema_search_path'=> 'public'})
-    ActiveRecord::Base.establish_connection(admin_connection)
-    ActiveRecord::Base.connection.create_database(dbconfig.fetch('database'))
+    ActiveRecord::Base.establish_connection(
+      :adapter  => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
+      :host     => db.host,
+      :port     => db.port,
+      :username => db.user,
+      :password => db.password,
+      :database => "postgres",
+      :encoding => 'utf8',
+      :schema_search_path => "public"
+    )
+
+    ActiveRecord::Base.connection.create_database(db.path[1..-1])
   end
 
   task :migrate do
-    database_file = File.open(File.expand_path("../config/database.yml", __FILE__))
-    dbconfig = YAML::load(ERB.new(database_file).result)[ENV.fetch("RACK_ENV", 'development')]
-    ActiveRecord::Base.establish_connection(dbconfig)
+    require "./config/boot"
     ActiveRecord::Migrator.migrate("db/migrate/")
   end
 end
@@ -46,8 +51,8 @@ task :updater do
 
       next if post.was_shared?
       begin
-        message = "#{entry.links[:alternate]} #{entry.content}"
-
+        link_count = entry.links[:alternate].size
+        message = "#{entry.content[0, (130-link_count)]}...\n entry.links[:alternate]"
         facebook.api("/me/feed", {message: message}, "post") if facebook
         twitter.update(message[0, 139]) if twitter
         if facebook or twitter
