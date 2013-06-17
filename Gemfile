@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem "sinatra", "~> 1.3"
 gem "mustache", "~> 0.99", require: "mustache/sinatra"
+gem "diaspora-client", github: "diaspora/diaspora-client"
+gem "rake"
 
 group :development, :test do
   gem "awesome_print"
