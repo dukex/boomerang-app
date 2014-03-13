@@ -1,9 +1,0 @@
-application_base_url: "http://boomerang-app.herokuapp.com"
-manifest_fields:
-  name: "Bomerang App"
-  description: "Share a part of your post on social networks and get people to diaspora"
-  icon_url: "icon48.png"
-  permissions_overview: "Boomerang App need read your post on diaspora pod"
-permissions:
-  posts:
-    read: "Boomerang App wants to read posts to share"
